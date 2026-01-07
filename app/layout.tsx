@@ -22,6 +22,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "오늘의 나 순위",
   description: "전국 5,184만명 중 오늘의 나 순위를 확인하세요",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  openGraph: {
+    title: "오늘의 나 순위",
+    description: "전국 5,184만명 중 오늘의 나 순위를 확인하세요",
+    type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "오늘의 나 순위" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "오늘의 나 순위",
+    description: "전국 5,184만명 중 오늘의 나 순위를 확인하세요",
+    images: ["/opengraph-image"],
+  },
   verification: {
     google: "4j3cTkVACL2lF9s0CFfg6x9kHsVdndQdbKI5atxdBGQ",
   },
