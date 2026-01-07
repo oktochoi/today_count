@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og';
 import type { NextRequest } from 'next/server';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 
 export const runtime = 'nodejs';
 // next.config.ts에서 output: "export" 사용 중이므로, 이 라우트는 정적으로 고정되어야 빌드가 통과함
@@ -11,13 +13,11 @@ export const size = {
 };
 export const contentType = 'image/png';
 
-function arrayBufferToBase64(buffer: ArrayBuffer) {
-  return Buffer.from(buffer).toString('base64');
-}
-
 export default async function OpenGraphImage(_req: NextRequest) {
-  const logoBuffer = await fetch(new URL('./logo.png', import.meta.url)).then(res => res.arrayBuffer());
-  const logoDataUrl = `data:image/png;base64,${arrayBufferToBase64(logoBuffer)}`;
+  // 정적 export 빌드 단계에서만 프리렌더되므로, 프로젝트 루트의 파일을 직접 읽는다.
+  const logoFilePath = path.join(process.cwd(), 'app', 'logo.png');
+  const logoBuffer = await readFile(logoFilePath);
+  const logoDataUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`;
 
   return new ImageResponse(
     (
