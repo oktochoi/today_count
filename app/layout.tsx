@@ -22,6 +22,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "오늘의 나 순위",
   description: "전국 5,184만명 중 오늘의 나 순위를 확인하세요",
+  verification: {
+    google: "4j3cTkVACL2lF9s0CFfg6x9kHsVdndQdbKI5atxdBGQ",
+  },
 };
 
 export default function RootLayout({
