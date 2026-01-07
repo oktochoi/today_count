@@ -88,6 +88,25 @@ export default function Home() {
     setDisplayTotal(51_840_000);
   };
 
+  const handleShare = async () => {
+    try {
+      const title = '오늘의 나 순위';
+      const text = hasMeasured
+        ? `오늘의 나 순위: ${todayRank.toLocaleString()}위 (상위 ${percentage.toFixed(2)}%)`
+        : '오늘의 나 순위를 확인해보세요';
+      const url = typeof window !== 'undefined' ? window.location.href : '';
+      if (navigator.share) {
+        await navigator.share({ title, text, url });
+      } else if (navigator.clipboard && url) {
+        await navigator.clipboard.writeText(`${title}\n${text}\n${url}`);
+        // 간단 안내
+        alert('링크를 클립보드에 복사했어요.');
+      }
+    } catch {
+      // 사용자 취소 등은 무시
+    }
+  };
+
   const getTodayDate = (): string => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -345,7 +364,7 @@ export default function Home() {
           <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
           
           <div className="text-center mb-8 relative z-10">
-            <div className="text-pink-400 text-xl mb-4 font-bold tracking-wide">🌍 전 세계</div>
+            <div className="text-pink-400 text-xl mb-4 font-bold tracking-wide">🇰🇷 전국</div>
             <div className="text-5xl font-black text-white mb-2 drop-shadow-lg">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">
                 {formatTotalUsers(displayTotal)}
@@ -433,6 +452,25 @@ export default function Home() {
           </button>
         </div>
 
+        {/* 공유하기 */}
+        <div className="relative bg-gradient-to-br from-gray-900 to-black rounded-3xl shadow-2xl p-8 mb-6 border-4 border-sky-500/30 overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-500 to-cyan-500"></div>
+          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-sky-500"></div>
+          
+          <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-cyan-400 mb-6 flex items-center">
+            <div className="w-10 h-10 flex items-center justify-center mr-3">
+              <i className="ri-share-forward-line text-3xl text-sky-400"></i>
+            </div>
+            공유하기
+          </h2>
+          <button
+            onClick={handleShare}
+            className="w-full py-5 rounded-2xl font-black text-xl transition-all whitespace-nowrap border-4 bg-gradient-to-r from-sky-600 via-cyan-600 to-teal-600 text-white border-sky-400 hover:shadow-2xl hover:shadow-sky-500/40 hover:scale-105"
+          >
+            {hasMeasured ? '현재 순위 공유하기' : '링크 공유하기'}
+          </button>
+        </div>
+
         <div className="relative bg-gradient-to-br from-gray-900 to-black rounded-3xl shadow-2xl p-8 mb-6 border-4 border-orange-500/30 overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-red-500"></div>
           <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-orange-500"></div>
@@ -486,7 +524,7 @@ export default function Home() {
             ) : (
               <div style={{ width: '100%', height: 320 }}>
                 <ResponsiveContainer>
-                  <LineChart data={rankHistory} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
+                  <LineChart data={rankHistory} margin={{ top: 20, right: 24, left: 40, bottom: 16 }}>
                     <CartesianGrid stroke="rgba(16, 185, 129, 0.1)" />
                     <XAxis
                       dataKey="at"
@@ -499,6 +537,7 @@ export default function Home() {
                       }}
                       stroke="#86efac"
                       tick={{ fill: '#86efac' }}
+                      tickMargin={8}
                     />
                     <YAxis
                       dataKey="rank"
@@ -506,6 +545,8 @@ export default function Home() {
                       tickFormatter={(v: number) => `${v.toLocaleString()}위`}
                       stroke="#86efac"
                       tick={{ fill: '#86efac' }}
+                      tickMargin={8}
+                      domain={['dataMin', 'dataMax']}
                     />
                     <Tooltip
                       formatter={(value?: number) => [value == null ? '—' : `${value.toLocaleString()}위`, '순위']}
@@ -528,44 +569,6 @@ export default function Home() {
                 </ResponsiveContainer>
               </div>
             )}
-          </div>
-        </div>
-
-        <div className="relative bg-gradient-to-br from-gray-900 to-black rounded-3xl shadow-2xl p-8 border-4 border-blue-500/30 overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
-          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-blue-500"></div>
-          
-          <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 mb-4 flex items-center">
-            <div className="w-10 h-10 flex items-center justify-center mr-3">
-              <i className="ri-information-line text-3xl text-blue-400"></i>
-            </div>
-            안내사항
-          </h2>
-          <div className="space-y-3 text-gray-300">
-            <div className="flex items-start">
-              <div className="w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
-                <i className="ri-checkbox-circle-line text-lg text-cyan-400"></i>
-              </div>
-              <span className="font-semibold">이 순위는 참고용이며, 근거는 공개되지 않습니다.</span>
-            </div>
-            <div className="flex items-start">
-              <div className="w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
-                <i className="ri-checkbox-circle-line text-lg text-cyan-400"></i>
-              </div>
-              <span className="font-semibold">매일 자정에 순위가 자동으로 갱신됩니다.</span>
-            </div>
-            <div className="flex items-start">
-              <div className="w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
-                <i className="ri-checkbox-circle-line text-lg text-cyan-400"></i>
-              </div>
-              <span className="font-semibold">같은 날에는 새로고침해도 동일한 순위가 유지됩니다.</span>
-            </div>
-            <div className="flex items-start">
-              <div className="w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
-                <i className="ri-checkbox-circle-line text-lg text-cyan-400"></i>
-              </div>
-              <span className="font-semibold">재측정은 하루에 한 번만 가능합니다.</span>
-            </div>
           </div>
         </div>
       </div>
