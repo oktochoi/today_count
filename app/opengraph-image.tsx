@@ -2,6 +2,9 @@ import { ImageResponse } from 'next/og';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
+// next.config.ts에서 output: "export" 사용 중이므로, 이 라우트는 정적으로 고정되어야 빌드가 통과함
+export const dynamic = 'force-static';
+export const revalidate = false;
 export const size = {
   width: 1200,
   height: 630,
